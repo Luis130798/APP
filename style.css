@@ -56,13 +56,19 @@ body {
   justify-content: center;
   box-shadow: 0 2px 8px #0002;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, transform 0.15s;
+  transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
 }
 .sidebar-btn:active, .sidebar-btn:focus {
   background: var(--sidebar-btn-active);
   color: var(--sidebar-bg);
   outline: none;
   transform: scale(1.08);
+}
+.sidebar-btn:hover {
+  background: var(--sidebar-btn-active);
+  color: var(--sidebar-bg);
+  box-shadow: 0 4px 16px #0097a740;
+  transform: scale(1.12);
 }
 .main-area {
   flex: 1;
@@ -88,12 +94,17 @@ body {
   letter-spacing: 1px;
   box-shadow: 0 2px 8px #0002;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
 }
 .main-header-btn:active, .main-header-btn:focus {
   background: #007c91;
   outline: none;
   transform: scale(1.04);
+}
+.main-header-btn:hover {
+  background: #007c91;
+  box-shadow: 0 4px 16px #0097a740;
+  transform: scale(1.07);
 }
 .cards-row {
   display: flex;
@@ -104,7 +115,8 @@ body {
 .card.big-card {
   background: var(--card-bg);
   border-radius: 24px;
-  box-shadow: var(--card-shadow);
+  box-shadow: 0 4px 24px #0002, 0 1.5px 6px #0097a720;
+  transition: box-shadow 0.25s, transform 0.18s;
   flex: 1 1 0;
   min-width: 220px;
   max-width: 340px;
@@ -114,6 +126,10 @@ body {
   align-items: center;
   margin: 0 0 0 0;
   position: relative;
+}
+.card.big-card:hover {
+  box-shadow: 0 8px 32px #0003, 0 2px 8px #0097a740;
+  transform: translateY(-4px) scale(1.025);
 }
 .card-title {
   color: var(--card-title);
@@ -153,7 +169,8 @@ body {
 .widget {
   background: var(--widget-bg);
   border-radius: 24px;
-  box-shadow: var(--card-shadow);
+  box-shadow: 0 4px 24px #0002, 0 1.5px 6px #0097a720;
+  transition: box-shadow 0.25s, transform 0.18s;
   padding: 24px 18px 18px 18px;
   flex: 1 1 0;
   min-width: 320px;
@@ -161,6 +178,10 @@ body {
   display: flex;
   flex-direction: column;
   margin-bottom: 0;
+}
+.widget:hover {
+  box-shadow: 0 8px 32px #0003, 0 2px 8px #0097a740;
+  transform: translateY(-2px) scale(1.01);
 }
 .widget-title {
   color: var(--widget-title);
@@ -245,7 +266,7 @@ body {
   font-size: 1.05em;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, border 0.2s, transform 0.15s;
+  transition: background 0.2s, color 0.2s, border 0.2s, transform 0.15s, box-shadow 0.2s;
   margin-top: 8px;
   display: flex;
   align-items: center;
@@ -257,6 +278,13 @@ body {
   border-color: var(--sidebar-bg);
   outline: none;
   transform: scale(1.04);
+}
+.recom-btn:hover {
+  background: var(--sidebar-bg);
+  color: #fff;
+  border-color: var(--sidebar-bg);
+  box-shadow: 0 2px 8px #0097a740;
+  transform: scale(1.08);
 }
 @media (max-width: 1200px) {
   .main-widgets, .cards-row {

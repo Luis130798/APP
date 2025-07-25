@@ -142,29 +142,104 @@ function updateChart(feeds) {
 }
 
 // =====================
-// ACTUALIZACIÓN DE UI
+// SIMULACIÓN DE DATOS (si no hay conexión a ThingSpeak)
+// =====================
+function generarDatoAleatorio(min, max, dec=1) {
+  return +(Math.random() * (max - min) + min).toFixed(dec);
+}
+
+function simularDatos() {
+  // Simula un feed similar al de ThingSpeak
+  const ahora = new Date();
+  return {
+    [`field${CONFIG.fieldTemp}`]: generarDatoAleatorio(18, 32),
+    [`field${CONFIG.fieldHum}`]: generarDatoAleatorio(30, 80),
+    [`field${CONFIG.fieldAir}`]: generarDatoAleatorio(10, 250, 0),
+    created_at: ahora.toISOString()
+  };
+}
+
+// =====================
+// ANIMACIÓN DE VALORES
+// =====================
+function animarConteo(element, valorFinal, sufijo = '', decimales = 1, duracion = 800) {
+  const valorInicial = parseFloat(element.textContent) || 0;
+  const inicio = performance.now();
+  function animar(now) {
+    const progreso = Math.min((now - inicio) / duracion, 1);
+    const valor = valorInicial + (valorFinal - valorInicial) * progreso;
+    element.textContent = isNaN(valorFinal) ? '--' + sufijo : valor.toFixed(decimales) + ' ' + sufijo;
+    if (progreso < 1) requestAnimationFrame(animar);
+    else element.textContent = isNaN(valorFinal) ? '--' + sufijo : valorFinal.toFixed(decimales) + ' ' + sufijo;
+  }
+  requestAnimationFrame(animar);
+}
+
+// =====================
+// RECOMENDACIONES DINÁMICAS
+// =====================
+const recomendaciones = {
+  green: 'Disfruta el aire libre, la calidad es buena.',
+  yellow: 'Personas sensibles deben limitar actividades al aire libre.',
+  orange: 'Evita actividades físicas intensas al aire libre.',
+  red: 'Permanece en interiores y usa mascarilla si sales.',
+  purple: 'Evita salir, la calidad del aire es muy dañina.'
+};
+let recomendacionesVisibles = false;
+
+function mostrarRecomendacion(color) {
+  let texto = recomendaciones[color] || 'Sin datos.';
+  let div = document.getElementById('recomBox');
+  if (!div) {
+    div = document.createElement('div');
+    div.id = 'recomBox';
+    div.style.position = 'fixed';
+    div.style.bottom = '32px';
+    div.style.right = '32px';
+    div.style.background = '#fff';
+    div.style.border = '2px solid #0097a7';
+    div.style.borderRadius = '18px';
+    div.style.padding = '18px 28px';
+    div.style.boxShadow = '0 4px 24px #0002';
+    div.style.zIndex = '9999';
+    div.style.fontSize = '1.1em';
+    div.style.color = '#0097a7';
+    div.style.maxWidth = '320px';
+    div.style.transition = 'opacity 0.3s';
+    document.body.appendChild(div);
+  }
+  div.textContent = texto;
+  div.style.opacity = '1';
+  recomendacionesVisibles = true;
+  setTimeout(() => {
+    if (recomendacionesVisibles) div.style.opacity = '0';
+    recomendacionesVisibles = false;
+  }, 6000);
+}
+
+// =====================
+// MODIFICAR updateCards Y updateSemaforo PARA ANIMACIÓN Y RECOMENDACIONES
 // =====================
 function updateCards(feed) {
   // Temperatura
   const temp = parseFloat(feed[`field${CONFIG.fieldTemp}`]);
-  tempValue.textContent = isNaN(temp) ? '-- °C' : `${temp.toFixed(1)} °C`;
+  animarConteo(tempValue, temp, '°C', 1);
   tempCard.className = 'card big-card' + (temp > 30 ? ' alert' : temp > 37 ? ' danger' : '');
 
   // Humedad
   const hum = parseFloat(feed[`field${CONFIG.fieldHum}`]);
-  humValue.textContent = isNaN(hum) ? '-- %' : `${hum.toFixed(1)} %`;
+  animarConteo(humValue, hum, '%', 1);
   humCard.className = 'card big-card' + (hum < 30 ? ' alert' : hum < 15 ? ' danger' : '');
 
   // Calidad de aire
   const air = parseFloat(feed[`field${CONFIG.fieldAir}`]);
-  airValue.textContent = isNaN(air) ? '-- PM' : `${air.toFixed(0)} PM`;
+  animarConteo(airValue, air, 'PM', 0);
   airCard.className = 'card big-card' + (air > 100 ? ' alert' : air > 200 ? ' danger' : '');
 
   updateSemaforo(air);
 }
 
 function updateSemaforo(air) {
-  // Cambia el texto y el color del semáforo según el valor de calidad de aire
   let text = 'Sin datos';
   let color = 'green';
   if (isNaN(air)) {
@@ -187,14 +262,38 @@ function updateSemaforo(air) {
     color = 'purple';
   }
   semaforoText.textContent = text;
-  // Resalta el color correspondiente
   document.querySelectorAll('.semaforo-color').forEach(el => el.style.opacity = '0.3');
   const colorIndex = {green:0, yellow:1, orange:2, red:3, purple:4}[color];
   if (colorIndex !== undefined) {
     document.querySelectorAll('.semaforo-color')[colorIndex].style.opacity = '1';
   }
+  // Mostrar recomendación dinámica
+  if (recomendacionesVisibles) return;
+  mostrarRecomendacion(color);
 }
 
+// =====================
+// BOTÓN DE RECOMENDACIONES
+// =====================
+const recomBtn = document.querySelector('.recom-btn');
+if (recomBtn) {
+  recomBtn.onclick = () => {
+    // Busca el color actual del semáforo
+    let air = parseFloat(airValue.textContent);
+    let color = 'green';
+    if (isNaN(air)) color = 'green';
+    else if (air <= 50) color = 'green';
+    else if (air <= 100) color = 'yellow';
+    else if (air <= 150) color = 'orange';
+    else if (air <= 200) color = 'red';
+    else color = 'purple';
+    mostrarRecomendacion(color);
+  };
+}
+
+// =====================
+// ACTUALIZACIÓN DE UI
+// =====================
 function updateStaticInfo() {
   // Ubicación y sensor en tarjetas
   cardLocations.forEach(el => el.textContent = CONFIG.location);
@@ -209,11 +308,14 @@ function showError(msg) {
 }
 
 // =====================
-// INICIALIZACIÓN Y REFRESCO
+// INICIALIZACIÓN Y REFRESCO (MODIFICADO)
 // =====================
 async function refreshDashboard() {
-  const feeds = await fetchData();
-  if (!feeds) return;
+  let feeds = await fetchData();
+  if (!feeds) {
+    // Si no hay datos, simula
+    feeds = Array.from({length: 20}, simularDatos);
+  }
   const latest = feeds[feeds.length - 1];
   updateCards(latest);
   updateChart(feeds);
