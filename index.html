@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Ambiental - ThingSpeak</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <button class="sidebar-btn"><i class="fa fa-bars"></i></button>
+      <button class="sidebar-btn"><i class="fa fa-chart-line"></i></button>
+      <button class="sidebar-btn"><i class="fa fa-handshake"></i></button>
+    </aside>
+    <main class="main-area">
+      <header class="main-header">
+        <button class="main-header-btn">SENSORES</button>
+      </header>
+      <section class="cards-row">
+        <div class="card big-card" id="humCard">
+          <div class="card-title">Humedad</div>
+          <div class="card-location">AREQUIPA-PERU</div>
+          <div class="card-icon"><i class="fa fa-tint"></i></div>
+          <div class="card-value" id="humValue">-- %</div>
+          <div class="card-sensor">JACOBO HUNTER</div>
+        </div>
+        <div class="card big-card" id="tempCard">
+          <div class="card-title">Termperatura</div>
+          <div class="card-location">AREQUIPA-PERU</div>
+          <div class="card-icon"><i class="fa fa-temperature-half"></i></div>
+          <div class="card-value" id="tempValue">-- °C</div>
+          <div class="card-sensor">JACOBO HUNTER</div>
+        </div>
+        <div class="card big-card" id="airCard">
+          <div class="card-title">Calidad de Aire</div>
+          <div class="card-location">AREQUIPA-PERU</div>
+          <div class="card-icon"><i class="fa fa-wind"></i></div>
+          <div class="card-value" id="airValue">-- PM</div>
+          <div class="card-sensor">JACOBO HUNTER</div>
+        </div>
+      </section>
+      <section class="main-widgets">
+        <div class="widget map-widget">
+          <div class="widget-title">Mapa de Sensores</div>
+          <div class="map-info">
+            <div class="map-marker"><i class="fa fa-map-marker-alt"></i></div>
+            <div class="map-address">Av. Independencia<br>Arequipa-Peru</div>
+          </div>
+          <div class="map-frame">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3827.011964073634!2d-71.5374516855376!3d-16.39880358868759!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91424a511e2b7e2b%3A0x7e6e2e2e2e2e2e2e!2sAv.%20Independencia%2C%20Arequipa%2C%20Peru!5e0!3m2!1ses!2spe!4v1680000000000!5m2!1ses!2spe" width="100%" height="180" style="border:0; border-radius:12px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+          <div class="map-search">
+            <input type="text" placeholder="Buscar" disabled />
+            <i class="fa fa-search"></i>
+          </div>
+        </div>
+        <div class="widget semaforo-widget">
+          <div class="widget-title">Semaforo calidad de aire</div>
+          <div class="semaforo">
+            <div class="semaforo-color green"></div>
+            <div class="semaforo-color yellow"></div>
+            <div class="semaforo-color orange"></div>
+            <div class="semaforo-color red"></div>
+            <div class="semaforo-color purple"></div>
+          </div>
+          <div class="semaforo-info">
+            <span id="semaforoText">Da&ntilde;ina a la salud de los grupos sensibles</span>
+          </div>
+          <button class="recom-btn">Recomendaciones: <i class="fa fa-chevron-down"></i></button>
+        </div>
+        <!-- Widget: Historial de Sensores -->
+        <div class="widget chart-widget">
+          <div class="widget-title">Historial de Sensores (últimas 20 lecturas)</div>
+          <canvas id="sensorChart" height="200"></canvas>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
